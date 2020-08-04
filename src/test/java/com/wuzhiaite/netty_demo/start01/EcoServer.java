@@ -2,6 +2,7 @@ package com.wuzhiaite.netty_demo.start01;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -10,6 +11,10 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 import java.net.InetSocketAddress;
 
+/**
+ *
+ */
+@ChannelHandler.Sharable
 public class EcoServer {
 
     private Integer port;
@@ -33,16 +38,24 @@ public class EcoServer {
                             socketChannel.pipeline().addLast(serverHandler);
                         }
                     });
-                ChannelFuture f = b.bind().sync();
+                ChannelFuture f = b.bind().sync();//异步绑定服务器
                 f.channel().closeFuture().sync();//获取Channel的closeFuture阻塞直到完成
         }  finally {
-
+            group.shutdownGracefully().sync();
         }
 
 
     }
 
+    public static void main(String[] args) throws Exception {
+//        if(args.length != 1){
+//            System.out.println("Usage:"+EcoServer.class.getSimpleName()+"<port>");
+//        }
+//        int port = Integer.parseInt(args[0]);
+        int port = 8008;
+        new EcoServer(port).start();
 
+    }
 
 
 
